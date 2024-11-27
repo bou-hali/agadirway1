@@ -4,31 +4,25 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class TarejtModel extends Model
+class BusModel extends Model
 {
-    protected $table            = 'trajet';
+    protected $table            = 'bus';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    =  ['nom', 'bus_id'];
+    protected $allowedFields    = ['numero', 'marque', 'capacite'];
 
-    protected bool $allowEmptyInserts = false;
-    protected bool $updateOnlyChanged = true;
-
-    protected array $casts = [];
-    protected array $castHandlers = [];
-
-    // Dates
+    // Disable Timestamps
     protected $useTimestamps = false;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
+    protected $validationRules      = [
+        'numero'    => 'required|min_length[3]|max_length[20]|is_unique[bus.numero,id,{id}]',
+        'marque'    => 'required|min_length[3]|max_length[50]',
+        'capacite'  => 'required|integer|greater_than[0]',
+    ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
@@ -43,11 +37,4 @@ class TarejtModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-    public function getTrajetsEntreStations($stationDepart, $stationArrivee)
-    {
-        
-        return $this->where('station_depart', $stationDepart)
-                    ->where('station_arrivee', $stationArrivee)
-                    ->findAll();
-    }
 }

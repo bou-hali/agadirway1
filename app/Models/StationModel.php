@@ -14,12 +14,6 @@ class StationModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = ['nom', 'adresse'];
 
-    protected bool $allowEmptyInserts = false;
-    protected bool $updateOnlyChanged = true;
-
-    protected array $casts = [];
-    protected array $castHandlers = [];
-
     // Dates
     protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';

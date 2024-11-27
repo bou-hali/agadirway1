@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class StationTarejtModel extends Model
+class TrajetStationModel extends Model
 {
     protected $table            = 'trajet_station';
     protected $primaryKey       = 'id';
@@ -12,23 +12,21 @@ class StationTarejtModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
-
-    protected bool $allowEmptyInserts = false;
-    protected bool $updateOnlyChanged = true;
-
-    protected array $casts = [];
-    protected array $castHandlers = [];
+    protected $allowedFields    = ['trajet_id', 'station_id', 'ordre_passage'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
+    protected $validationRules      = [
+        'trajet_id'      => 'required|integer|is_not_unique[trajet.id]',
+        'station_id'     => 'required|integer|is_not_unique[station.id]',
+        'ordre_passage'  => 'required|integer|greater_than_equal_to[1]',
+    ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
@@ -43,4 +41,21 @@ class StationTarejtModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    /**
+     * Retrieve stations for a specific trajet in order.
+     *
+     * @param int $trajet_id
+     * @return array
+     */
+    public function getStationsByTrajet($trajet_id)
+    {
+        return $this->db->table('trajet_station ts')
+            ->select('station.nom, station.adresse, ts.ordre_passage')
+            ->join('station', 'ts.station_id = station.id', 'left')
+            ->where('ts.trajet_id', $trajet_id)
+            ->orderBy('ts.ordre_passage', 'ASC')
+            ->get()
+            ->getResultArray();
+    }
 }
